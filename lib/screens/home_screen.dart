@@ -24,27 +24,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: .stretch,
             spacing: 22,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  spacing: 2,
-                  children: [
-                    const Text(
-                      "Let's color!",
-                      style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, letterSpacing: -0.5),
-                    ),
-                    Text(
-                      'Pick a picture',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const _Header(),
               ListenableBuilder(
                 listenable: c,
                 builder: (context, _) => _ContinueCard(c, controllers: controllers),
@@ -67,6 +47,35 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 2,
+        children: [
+          const Text(
+            "Let's color!",
+            style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, letterSpacing: -0.5),
+          ),
+          Text(
+            'Pick a picture',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }
