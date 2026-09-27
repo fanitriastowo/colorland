@@ -1,17 +1,38 @@
 # colorland
 
-A new Flutter project.
+coloring image app from SVG image with path tracing
 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Run on iOS
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Requires macOS, Xcode (with the iOS Simulator), and the Flutter SDK.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```sh
+flutter pub get
+open -a Simulator
+flutter run            # or: flutter devices, then flutter run -d <device-id>
+```
+
+Or paste this into a shell (same as `scripts: ios` in `pubspec.yaml`). It
+reuses a booted simulator, or boots the last available iPhone/iPad, then runs
+the app on it:
+
+```sh
+BOOTED_ID=$(xcrun simctl list devices | grep "Booted" | head -n 1 | sed -E 's/.*([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}).*/\1/')
+if [ -z "$BOOTED_ID" ]; then
+  LAST_ID=$(xcrun simctl list devices | grep -E "iPhone|iPad" | grep -v "unavailable" | tail -n 1 | sed -E 's/.*([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}).*/\1/')
+  xcrun simctl boot "$LAST_ID"
+  open -a Simulator
+  flutter run -d "$LAST_ID"
+else
+  flutter run -d "$BOOTED_ID"
+fi
+```
+
+To run on a physical iPhone, open `ios/Runner.xcworkspace` in Xcode, set a
+signing Team under Runner → Signing & Capabilities, then
+`flutter run -d <device-id>`.
+

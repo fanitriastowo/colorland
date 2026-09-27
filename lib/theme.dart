@@ -44,11 +44,105 @@ class AppDarkColors {
   static const Color border = Color(0xFF403A5C);
 }
 
+/// Fixed artwork colors: the picture is "paper", so it looks the same in
+/// both themes.
+class ArtColors {
+  ArtColors._();
+
+  static const Color paper = Color(0xFFFFFFFF);
+  static const Color line = Color(0xFF293241);
+  static const Color tint = Color(0xFFFFF3B8);
+  static const Color numberMuted = Color(0xFF9AA2B3);
+  static const Color hint = Color(0xFF4D96FF);
+}
+
+/// UI colors that have no `ColorScheme` slot.
+class AppExtraColors extends ThemeExtension<AppExtraColors> {
+  const AppExtraColors({
+    required this.green,
+    required this.track,
+    required this.dotGrid,
+    required this.dashed,
+    required this.handle,
+    required this.lip,
+    required this.darkButtonLip,
+  });
+
+  final Color green;
+  final Color track;
+  final Color dotGrid;
+  final Color dashed;
+  final Color handle;
+  final Color lip;
+  final Color darkButtonLip;
+
+  static const light = AppExtraColors(
+    green: AppColors.green,
+    track: Color(0xFFFFF1C2),
+    dotGrid: Color(0xFFF1E6C4),
+    dashed: Color(0xFFD9D3C0),
+    handle: Color(0xFFE3D9BC),
+    lip: Color(0x24293241),
+    darkButtonLip: Color(0xFF1A202B),
+  );
+
+  static const dark = AppExtraColors(
+    green: AppDarkColors.green,
+    track: AppDarkColors.surface2,
+    dotGrid: AppDarkColors.border,
+    dashed: AppDarkColors.border,
+    handle: AppDarkColors.border,
+    lip: Color(0x66000000),
+    darkButtonLip: Color(0xFFD9D3C0),
+  );
+
+  @override
+  AppExtraColors copyWith({
+    Color? green,
+    Color? track,
+    Color? dotGrid,
+    Color? dashed,
+    Color? handle,
+    Color? lip,
+    Color? darkButtonLip,
+  }) =>
+      AppExtraColors(
+        green: green ?? this.green,
+        track: track ?? this.track,
+        dotGrid: dotGrid ?? this.dotGrid,
+        dashed: dashed ?? this.dashed,
+        handle: handle ?? this.handle,
+        lip: lip ?? this.lip,
+        darkButtonLip: darkButtonLip ?? this.darkButtonLip,
+      );
+
+  @override
+  AppExtraColors lerp(AppExtraColors? other, double t) {
+    if (other == null) return this;
+    return AppExtraColors(
+      green: Color.lerp(green, other.green, t)!,
+      track: Color.lerp(track, other.track, t)!,
+      dotGrid: Color.lerp(dotGrid, other.dotGrid, t)!,
+      dashed: Color.lerp(dashed, other.dashed, t)!,
+      handle: Color.lerp(handle, other.handle, t)!,
+      lip: Color.lerp(lip, other.lip, t)!,
+      darkButtonLip: Color.lerp(darkButtonLip, other.darkButtonLip, t)!,
+    );
+  }
+}
+
+extension AppThemeContext on BuildContext {
+  ColorScheme get colors => Theme.of(this).colorScheme;
+  AppExtraColors get extra => Theme.of(this).extension<AppExtraColors>()!;
+}
+
 class AppTheme {
   AppTheme._();
 
   static ThemeData get light => ThemeData(
         useMaterial3: true,
+        fontFamily: 'Fredoka',
+        extensions: const [AppExtraColors.light],
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: AppColors.primary,
@@ -87,6 +181,8 @@ class AppTheme {
 
   static ThemeData get dark => ThemeData(
         useMaterial3: true,
+        fontFamily: 'Fredoka',
+        extensions: const [AppExtraColors.dark],
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
           primary: AppDarkColors.primary,
