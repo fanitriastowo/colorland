@@ -84,4 +84,82 @@ void main() {
     expect(c.hint, isFalse);
     c.dispose();
   });
+
+  test('parse numbers palette fills, keeps other fills as line art', () {
+    const info = PictureInfo('t', 'Test', palette: [
+      PaletteColor(Color(0xFFFF0000), 'Red'),
+      PaletteColor(Color(0xFF0000FF), 'Blue'),
+    ]);
+    const svg = '<svg>'
+        '<path d="M0 0H50V50H0Z" style="fill:#ff0000"/>'
+        '<path d="M60 0H110V50H60Z" style="fill:#000000"/>'
+        '<path d="M120 0H170V50H120Z" style="fill:#0000FF"/>'
+        '<path d="M0 0H9V9Z"/>'
+        '</svg>';
+    final p = ColoringPicture.parse(info, svg);
+
+    expect([for (final r in p.parts) r.number], [1, null, 2]);
+    expect(p.parts[1].fixed, isTrue);
+    expect([for (final r in p.regions) r.id], [0, 2]);
+    expect(p.numbers, [1, 2]);
+    expect(p.bounds, const Rect.fromLTRB(-4, -4, 174, 54));
+    expect(p.labels.keys, [0, 2]);
+    for (final MapEntry(:key, :value) in p.labels.entries) {
+      expect(p.parts[key].path.contains(value.at), isTrue);
+    }
+  });
+
+  test('taps on filled regions, and erasing unfilled ones, do nothing', () {
+    final c = _controller();
+    final r = c.picture.parts;
+    c.tap(r[0]);
+    c.tap(r[0]);
+    expect(c.canRedo, isFalse);
+    c.undo();
+    expect(c.canUndo, isFalse, reason: 'the second tap added no history');
+
+    c.toggleEraser();
+    c.tap(r[1]);
+    expect(c.canUndo, isFalse);
+    c.dispose();
+  });
+
+  test('totals, select, open and reset', () {
+    final c = _controller();
+    final r = c.picture.parts;
+    expect(c.totalOf(1), 2);
+    expect(c.totalOf(2), 1);
+
+    c.toggleEraser();
+    c.select(2);
+    expect(c.selected, 2);
+    expect(c.eraser, isFalse);
+
+    c.select(1);
+    c.tap(r[0]);
+    c.tap(r[1]);
+    expect(c.filledOf(1), 2);
+    c.select(1);
+    c.toggleEraser();
+    c.open();
+    expect(c.selected, 2, reason: 'open picks the first unfinished number');
+    expect(c.eraser, isFalse);
+
+    c.showHint();
+    c.reset();
+    expect(c.filled, isEmpty);
+    expect(c.canUndo, isFalse);
+    expect(c.selected, 1);
+    expect(c.hint, isFalse);
+    c.dispose();
+  });
+
+  testWidgets('a wrong tap shakes briefly', (tester) async {
+    final c = _controller();
+    c.tap(c.picture.parts[2]);
+    expect(c.wrongId, 2);
+    await tester.pump(const Duration(milliseconds: 450));
+    expect(c.wrongId, isNull);
+    c.dispose();
+  });
 }

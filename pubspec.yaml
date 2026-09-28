@@ -121,3 +121,6 @@ scripts:
         RUNNING_ID=$(adb devices | grep "^emulator-" | grep -w "device" | head -n 1 | cut -f1);
       fi;
       flutter run -d "$RUNNING_ID"
+  coverage: flutter test --coverage &&
+      genhtml coverage/lcov.info -o coverage/html &&
+      open coverage/html/index.html
