@@ -113,3 +113,11 @@ scripts:
       else
         flutter run -d "$BOOTED_ID";
       fi
+  android: RUNNING_ID=$(adb devices | grep "^emulator-" | grep -w "device" | head -n 1 | cut -f1);
+      if [ -z "$RUNNING_ID" ]; then
+        emulator -avd Pixel_10a > /dev/null 2>&1 &
+        adb wait-for-device;
+        until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 2; done;
+        RUNNING_ID=$(adb devices | grep "^emulator-" | grep -w "device" | head -n 1 | cut -f1);
+      fi;
+      flutter run -d "$RUNNING_ID"
