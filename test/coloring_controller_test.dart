@@ -162,4 +162,11 @@ void main() {
     expect(c.wrongId, isNull);
     c.dispose();
   });
+
+  testWidgets('every catalog picture loads and uses every palette number', (tester) async {
+    for (final info in categories.expand((c) => c.pictures)) {
+      final picture = await ColoringPicture.load(info);
+      expect(picture.regions.map((r) => r.number).toSet(), picture.numbers.toSet(), reason: info.id);
+    }
+  });
 }

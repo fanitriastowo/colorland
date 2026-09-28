@@ -53,7 +53,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Owl'), findsOneWidget);
-    expect(find.text('SVG slot'), findsNWidgets(5));
+    expect(find.text('SVG slot'), findsNothing);
 
     await tester.tap(find.byType(RoundButton).first);
     await tester.pumpAndSettle();

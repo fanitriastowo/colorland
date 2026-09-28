@@ -59,7 +59,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/pictures/fox.svg
+    - assets/pictures/
 
   fonts:
     - family: Fredoka
