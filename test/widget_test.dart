@@ -13,6 +13,9 @@ Future<Map<String, ColoringController>> _pumpApp(WidgetTester tester) async {
 
 Future<ColoringController> _openFox(WidgetTester tester) async {
   final controllers = await _pumpApp(tester);
+  await tester.ensureVisible(find.text('Animals'));
+  await tester.tap(find.text('Animals'));
+  await tester.pumpAndSettle();
   await tester.tap(find.text('Fox'));
   await tester.pumpAndSettle();
   return controllers['fox']!;

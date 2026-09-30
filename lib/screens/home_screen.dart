@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../coloring/artwork_view.dart';
@@ -8,14 +10,22 @@ import '../widgets/chunky.dart';
 import 'canvas_screen.dart';
 import 'gallery_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.controllers});
 
   final Map<String, ColoringController> controllers;
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final ColoringController _c = widget.controllers.values
+      .elementAt(math.Random().nextInt(widget.controllers.length));
+
+  @override
   Widget build(BuildContext context) {
-    final c = controllers[fox.id]!;
+    final controllers = widget.controllers;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -26,8 +36,8 @@ class HomeScreen extends StatelessWidget {
             children: [
               const _Header(),
               ListenableBuilder(
-                listenable: c,
-                builder: (context, _) => _ContinueCard(c, controllers: controllers),
+                listenable: _c,
+                builder: (context, _) => _ContinueCard(_c, controllers: controllers),
               ),
               GridView(
                 shrinkWrap: true,
