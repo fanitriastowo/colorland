@@ -26,6 +26,12 @@ class _CelebrationScreenState extends State<CelebrationScreen> with TickerProvid
     ..repeat(reverse: true);
 
   @override
+  void initState() {
+    super.initState();
+    speak('Yay! You colored the ${widget.controller.picture.info.name}!');
+  }
+
+  @override
   void dispose() {
     _bob.dispose();
     super.dispose();

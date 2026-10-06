@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme.dart';
 import 'coloring_controller.dart';
@@ -72,8 +73,14 @@ class _ArtworkViewState extends State<ArtworkView> with TickerProviderStateMixin
       }
       _fade.forward(from: 0);
     }
-    if (c.popId != _lastPop && c.popId != null) _pop.forward(from: 0);
-    if (c.wrongId != _lastWrong && c.wrongId != null) _shake.forward(from: 0);
+    if (c.popId != _lastPop && c.popId != null) {
+      _pop.forward(from: 0);
+      HapticFeedback.lightImpact();
+    }
+    if (c.wrongId != _lastWrong && c.wrongId != null) {
+      _shake.forward(from: 0);
+      HapticFeedback.selectionClick();
+    }
     if (c.hint != _lastHint) {
       c.hint ? _hint.repeat(count: 3) : _hint.reset();
     }

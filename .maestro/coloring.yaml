@@ -1,0 +1,31 @@
+appId: com.example.colorland
+---
+- launchApp:
+    clearState: true
+# Category and picture buttons merge their texts into one label.
+- tapOn: "Animals.*"
+- tapOn: "Fox.*"
+- assertVisible: "0 / 15"
+
+# The canvas is painted, so regions are tapped by screen position:
+# 43%,47% lands on the fox body, a large region with number 1.
+- tapOn: "2"
+- tapOn:
+    point: "43%,47%"
+- assertVisible: "0 / 15" # wrong color, nothing fills
+
+- tapOn: "1"
+- tapOn:
+    point: "43%,47%"
+- assertVisible: "1 / 15"
+
+- tapOn: "Undo"
+- assertVisible: "0 / 15"
+- tapOn: "Redo"
+- assertVisible: "1 / 15"
+
+- tapOn: "Eraser"
+- assertVisible: "Tap to erase"
+- tapOn:
+    point: "43%,47%"
+- assertVisible: "0 / 15"

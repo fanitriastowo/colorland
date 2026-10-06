@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'picture.dart';
 
-/// Color-by-number state for one picture. Kept for the app's lifetime, so
-/// progress survives navigation (not restarts).
+/// Color-by-number state for one picture. [filled] seeds saved progress;
+/// undo history starts empty.
 class ColoringController extends ChangeNotifier {
-  ColoringController(this.picture) {
+  ColoringController(this.picture, {Iterable<int> filled = const []}) {
+    this.filled.addAll(filled);
     selected = _firstOpen ?? 1;
   }
 
@@ -158,10 +160,24 @@ class ColoringController extends ChangeNotifier {
   }
 }
 
-/// Loads every catalog picture that has an SVG, keyed by picture id.
-Future<Map<String, ColoringController>> loadControllers() async => {
-      for (final c in categories)
-        for (final p in c.pictures)
-          if (p.asset != null)
-            p.id: ColoringController(await ColoringPicture.load(p)),
-    };
+/// Loads every catalog picture that has an SVG, keyed by picture id, with
+/// fills restored from and saved to shared preferences.
+Future<Map<String, ColoringController>> loadControllers() async {
+  final prefs = await SharedPreferences.getInstance();
+  final controllers = <String, ColoringController>{};
+  for (final c in categories) {
+    for (final p in c.pictures) {
+      if (p.asset == null) continue;
+      final picture = await ColoringPicture.load(p);
+      final key = 'fills.${p.id}';
+      // Skip ids that no longer match a region (the SVG changed).
+      final saved = (prefs.getStringList(key) ?? []).map(int.parse).where(
+          (id) => id < picture.parts.length && !picture.parts[id].fixed);
+      final controller = ColoringController(picture, filled: saved);
+      controller.addListener(
+          () => prefs.setStringList(key, [for (final id in controller.filled) '$id']));
+      controllers[p.id] = controller;
+    }
+  }
+  return controllers;
+}

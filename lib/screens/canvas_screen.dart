@@ -1,12 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../coloring/artwork_view.dart';
 import '../coloring/coloring_controller.dart';
 import '../theme.dart';
 import '../widgets/chunky.dart';
 import 'celebration_screen.dart';
+
+final _tts = FlutterTts();
+
+/// Says [text] aloud, for kids who can't read yet.
+void speak(String text) => _tts.speak(text);
 
 /// Opens the canvas for [c]. Selection is reset here, before the route
 /// builds, so listeners on other screens aren't notified mid-build.
@@ -36,13 +43,17 @@ class CanvasScreen extends StatefulWidget {
 
 class _CanvasScreenState extends State<CanvasScreen> {
   Timer? _doneTimer;
+  late int _lastSelected = c.selected;
 
   ColoringController get c => widget.controller;
+
+  void _sayColor() => speak(c.picture.info.palette[c.selected - 1].name);
 
   @override
   void initState() {
     super.initState();
     c.addListener(_onChange);
+    _sayColor();
   }
 
   @override
@@ -53,7 +64,12 @@ class _CanvasScreenState extends State<CanvasScreen> {
   }
 
   void _onChange() {
+    if (c.selected != _lastSelected && !c.eraser) {
+      _lastSelected = c.selected;
+      _sayColor();
+    }
     if (!c.isComplete || _doneTimer != null) return;
+    HapticFeedback.heavyImpact();
     _doneTimer = Timer(const Duration(milliseconds: 750), () {
       _doneTimer = null;
       if (!mounted || !c.isComplete) return;
@@ -153,7 +169,11 @@ class _CanvasScreenState extends State<CanvasScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: ArtworkView(c, interactive: true),
+            child: InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              child: ArtworkView(c, interactive: true),
+            ),
           ),
           if (c.eraser)
             Positioned(

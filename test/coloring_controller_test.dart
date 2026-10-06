@@ -5,7 +5,7 @@ import 'package:colorland/coloring/coloring_controller.dart';
 import 'package:colorland/coloring/picture.dart';
 
 /// Three side-by-side squares: two of color 1, one of color 2.
-ColoringController _controller() {
+ColoringController _controller({Iterable<int> filled = const []}) {
   const info = PictureInfo('t', 'Test', palette: [
     PaletteColor(Color(0xFFFF0000), 'Red'),
     PaletteColor(Color(0xFF0000FF), 'Blue'),
@@ -15,10 +15,18 @@ ColoringController _controller() {
     Region(0, square(0), 1),
     Region(1, square(60), 1),
     Region(2, square(120), 2),
-  ]));
+  ]), filled: filled);
 }
 
 void main() {
+  test('saved fills seed progress and the first open number', () {
+    final c = _controller(filled: [0, 1]);
+    expect(c.filled, {0, 1});
+    expect(c.selected, 2);
+    expect(c.canUndo, isFalse);
+    c.dispose();
+  });
+
   test('filling the selected number works, a wrong number does not', () {
     final c = _controller();
     final r = c.picture.parts;
