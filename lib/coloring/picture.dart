@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -31,402 +32,65 @@ class Category {
   final List<PictureInfo> pictures;
 }
 
-const fox = PictureInfo(
-  'fox',
-  'Fox',
-  asset: 'assets/pictures/fox.svg',
-  palette: [
-    PaletteColor(Color(0xFFFF8752), 'Orange'),
-    PaletteColor(Color(0xFFD15124), 'Red'),
-    PaletteColor(Color(0xFFE7EEF2), 'White'),
-    PaletteColor(Color(0xFFA3B8BF), 'Gray'),
-  ],
-);
+const catalogAsset = 'assets/catalog.json';
 
-final categories = [
-  Category('animals', 'Animals', [
-    fox,
-    PictureInfo(
-      'owl',
-      'Owl',
-      asset: 'assets/pictures/owl.svg',
-      palette: [
-        PaletteColor(Color(0xFF662113), 'Dark Brown'),
-        PaletteColor(Color(0xFFC1694F), 'Brown'),
-        PaletteColor(Color(0xFFFFCC4D), 'Yellow'),
-        PaletteColor(Color(0xFFFFAC33), 'Orange'),
-      ],
-    ),
-    PictureInfo(
-      'cat',
-      'Cat',
-      asset: 'assets/pictures/cat.svg',
-      palette: [
-        PaletteColor(Color(0xFF4C5359), 'Gray'),
-        PaletteColor(Color(0xFFFFFFFF), 'White'),
-        PaletteColor(Color(0xFF93E67F), 'Green'),
-        PaletteColor(Color(0xFFF7A4A4), 'Pink'),
-      ],
-    ),
-    PictureInfo(
-      'bunny',
-      'Bunny',
-      asset: 'assets/pictures/bunny.svg',
-      palette: [
-        PaletteColor(Color(0xFFD1E7F8), 'Light Blue'),
-        PaletteColor(Color(0xFF96C8EF), 'Blue'),
-        PaletteColor(Color(0xFF5AAAE7), 'Dark Blue'),
-        PaletteColor(Color(0xFFFF3F62), 'Pink'),
-      ],
-    ),
-    PictureInfo(
-      'bear',
-      'Bear',
-      asset: 'assets/pictures/bear.svg',
-      palette: [
-        PaletteColor(Color(0xFFC1694F), 'Brown'),
-        PaletteColor(Color(0xFFD99E82), 'Tan'),
-        PaletteColor(Color(0xFFE6AAAA), 'Pink'),
-        PaletteColor(Color(0xFFDD2E44), 'Red'),
-      ],
-    ),
-    PictureInfo(
-      'duck',
-      'Duck',
-      asset: 'assets/pictures/duck.svg',
-      palette: [
-        PaletteColor(Color(0xFF3E721D), 'Green'),
-        PaletteColor(Color(0xFFFFCC4D), 'Yellow'),
-        PaletteColor(Color(0xFFD99E82), 'Tan'),
-        PaletteColor(Color(0xFFC1694F), 'Brown'),
-        PaletteColor(Color(0xFFE1E8ED), 'White'),
-      ],
-    ),
-  ]),
-  Category('ocean', 'Ocean', [
-    PictureInfo(
-      'fish',
-      'Fish',
-      asset: 'assets/pictures/fish.svg',
-      palette: [
-        PaletteColor(Color(0xFFFC8C29), 'Orange'),
-        PaletteColor(Color(0xFFBD53B5), 'Purple'),
-        PaletteColor(Color(0xFF9DC1E4), 'Blue'),
-        PaletteColor(Color(0xFFFFDED5), 'Peach'),
-      ],
-    ),
-    PictureInfo(
-      'whale',
-      'Whale',
-      asset: 'assets/pictures/whale.svg',
-      palette: [
-        PaletteColor(Color(0xFF4AD0FF), 'Blue'),
-        PaletteColor(Color(0xFF99E5FF), 'Light Blue'),
-        PaletteColor(Color(0xFF16A5D9), 'Dark Blue'),
-        PaletteColor(Color(0xFFFAE8AC), 'Cream'),
-      ],
-    ),
-    PictureInfo(
-      'crab',
-      'Crab',
-      asset: 'assets/pictures/crab.svg',
-      palette: [
-        PaletteColor(Color(0xFFFF5722), 'Orange'),
-        PaletteColor(Color(0xFFAA290B), 'Red'),
-        PaletteColor(Color(0xFFD84315), 'Dark Orange'),
-      ],
-    ),
-    PictureInfo(
-      'octopus',
-      'Octopus',
-      asset: 'assets/pictures/octopus.svg',
-      palette: [
-        PaletteColor(Color(0xFFFF615E), 'Coral'),
-        PaletteColor(Color(0xFFFFA8A8), 'Pink'),
-        PaletteColor(Color(0xFFA52914), 'Red'),
-      ],
-    ),
-    PictureInfo(
-      'turtle',
-      'Turtle',
-      asset: 'assets/pictures/turtle.svg',
-      palette: [
-        PaletteColor(Color(0xFF83BF4F), 'Green'),
-        PaletteColor(Color(0xFF6EA03F), 'Dark Green'),
-        PaletteColor(Color(0xFFC1875D), 'Tan'),
-        PaletteColor(Color(0xFF7D593E), 'Brown'),
-        PaletteColor(Color(0xFFFFD93B), 'Yellow'),
-      ],
-    ),
-    PictureInfo(
-      'seal',
-      'Seal',
-      asset: 'assets/pictures/seal.svg',
-      palette: [
-        PaletteColor(Color(0xFF0F597A), 'Dark Blue'),
-        PaletteColor(Color(0xFF057091), 'Blue'),
-        PaletteColor(Color(0xFF0E91AF), 'Teal'),
-        PaletteColor(Color(0xFF1AB9D3), 'Light Blue'),
-        PaletteColor(Color(0xFFE07127), 'Orange'),
-        PaletteColor(Color(0xFFE0A617), 'Yellow'),
-      ],
-    ),
-  ]),
-  Category('cars', 'Cars', [
-    PictureInfo(
-      'bus',
-      'Bus',
-      asset: 'assets/pictures/bus.svg',
-      palette: [
-        PaletteColor(Color(0xFFFFC107), 'Yellow'),
-        PaletteColor(Color(0xFFFFF8E1), 'Cream'),
-        PaletteColor(Color(0xFF455A64), 'Gray'),
-        PaletteColor(Color(0xFF9FA8DA), 'Lilac'),
-        PaletteColor(Color(0xFF7986CB), 'Blue'),
-        PaletteColor(Color(0xFF64DD17), 'Green'),
-      ],
-    ),
-    PictureInfo(
-      'truck',
-      'Truck',
-      asset: 'assets/pictures/truck.svg',
-      palette: [
-        PaletteColor(Color(0xFFD3552F), 'Orange'),
-        PaletteColor(Color(0xFF9D2524), 'Red'),
-        PaletteColor(Color(0xFF4E6874), 'Slate'),
-        PaletteColor(Color(0xFF6D858E), 'Gray'),
-        PaletteColor(Color(0xFFFFFFFF), 'White'),
-      ],
-    ),
-    PictureInfo(
-      'train',
-      'Train',
-      asset: 'assets/pictures/train.svg',
-      palette: [
-        PaletteColor(Color(0xFFC1E7D8), 'Mint'),
-        PaletteColor(Color(0xFF8599A4), 'Gray'),
-        PaletteColor(Color(0xFF9B5C77), 'Purple'),
-        PaletteColor(Color(0xFFACD8CB), 'Green'),
-      ],
-    ),
-    PictureInfo(
-      'boat',
-      'Boat',
-      asset: 'assets/pictures/boat.svg',
-      palette: [
-        PaletteColor(Color(0xFF8599A4), 'Gray'),
-        PaletteColor(Color(0xFFC1E7D8), 'Mint'),
-        PaletteColor(Color(0xFF9B5C77), 'Purple'),
-      ],
-    ),
-    PictureInfo(
-      'plane',
-      'Plane',
-      asset: 'assets/pictures/plane.svg',
-      palette: [
-        PaletteColor(Color(0xFFFFCE00), 'Yellow'),
-        PaletteColor(Color(0xFF333E48), 'Dark Gray'),
-        PaletteColor(Color(0xFF7D868C), 'Gray'),
-      ],
-    ),
-    PictureInfo(
-      'bike',
-      'Bike',
-      asset: 'assets/pictures/bike.svg',
-      palette: [
-        PaletteColor(Color(0xFFE51B54), 'Red'),
-        PaletteColor(Color(0xFF5F7B89), 'Gray'),
-        PaletteColor(Color(0xFFCFD7DB), 'Silver'),
-        PaletteColor(Color(0xFFA31A53), 'Purple'),
-      ],
-    ),
-  ]),
-  Category('dinos', 'Dinos', [
-    PictureInfo(
-      't-rex',
-      'T-Rex',
-      asset: 'assets/pictures/t-rex.svg',
-      palette: [
-        PaletteColor(Color(0xFF77B155), 'Light Green'),
-        PaletteColor(Color(0xFF5C913A), 'Green'),
-        PaletteColor(Color(0xFF3E701E), 'Dark Green'),
-        PaletteColor(Color(0xFFF4900C), 'Orange'),
-      ],
-    ),
-    PictureInfo(
-      'egg',
-      'Egg',
-      asset: 'assets/pictures/egg.svg',
-      palette: [
-        PaletteColor(Color(0xFFF3F3F3), 'White'),
-        PaletteColor(Color(0xFFF0C419), 'Yellow'),
-      ],
-    ),
-    PictureInfo(
-      'stego',
-      'Stego',
-      asset: 'assets/pictures/stegosaurus.svg',
-      palette: [
-        PaletteColor(Color(0xFF46AF64), 'Green'),
-        PaletteColor(Color(0xFF389350), 'Dark Green'),
-        PaletteColor(Color(0xFF62CC7E), 'Light Green'),
-        PaletteColor(Color(0xFF775C38), 'Brown'),
-      ],
-    ),
-    PictureInfo(
-      'ptero',
-      'Ptero',
-      asset: 'assets/pictures/pterosaurus.svg',
-      palette: [
-        PaletteColor(Color(0xFF6DAA77), 'Green'),
-        PaletteColor(Color(0xFF639E6C), 'Dark Green'),
-        PaletteColor(Color(0xFF79B585), 'Light Green'),
-      ],
-    ),
-    PictureInfo(
-      'bronto',
-      'Bronto',
-      asset: 'assets/pictures/apatosaurus.svg',
-      palette: [
-        PaletteColor(Color(0xFF384276), 'Navy'),
-        PaletteColor(Color(0xFF4B5E99), 'Blue'),
-        PaletteColor(Color(0xFFD9BBF2), 'Lilac'),
-        PaletteColor(Color(0xFF5F196B), 'Purple'),
-      ],
-    ),
-    PictureInfo(
-      'trike',
-      'Trike',
-      asset: 'assets/pictures/triceratops.svg',
-      palette: [
-        PaletteColor(Color(0xFF98C79C), 'Green'),
-        PaletteColor(Color(0xFFABD1AD), 'Light Green'),
-        PaletteColor(Color(0xFF87B98F), 'Dark Green'),
-        PaletteColor(Color(0xFFD570A7), 'Pink'),
-      ],
-    ),
-  ]),
-  Category('food', 'Food', [
-    PictureInfo(
-      'apple',
-      'Apple',
-      asset: 'assets/pictures/apple.svg',
-      palette: [
-        PaletteColor(Color(0xFFDF2B2B), 'Red'),
-        PaletteColor(Color(0xFFFFF5CA), 'Cream'),
-        PaletteColor(Color(0xFFEAD991), 'Yellow'),
-        PaletteColor(Color(0xFF286F0D), 'Green'),
-      ],
-    ),
-    PictureInfo(
-      'cake',
-      'Cake',
-      asset: 'assets/pictures/cake.svg',
-      palette: [
-        PaletteColor(Color(0xFFF5AD1A), 'Orange'),
-        PaletteColor(Color(0xFFF5ECDA), 'Cream'),
-        PaletteColor(Color(0xFFEACC53), 'Yellow'),
-        PaletteColor(Color(0xFF5B2B20), 'Brown'),
-      ],
-    ),
-    PictureInfo(
-      'pizza',
-      'Pizza',
-      asset: 'assets/pictures/pizza.svg',
-      palette: [
-        PaletteColor(Color(0xFFEBA824), 'Yellow'),
-        PaletteColor(Color(0xFF6E4921), 'Brown'),
-        PaletteColor(Color(0xFFE8BC38), 'Gold'),
-        PaletteColor(Color(0xFFFFFCF4), 'White'),
-        PaletteColor(Color(0xFF3D7C38), 'Green'),
-      ],
-    ),
-    PictureInfo(
-      'pear',
-      'Pear',
-      asset: 'assets/pictures/pear.svg',
-      palette: [
-        PaletteColor(Color(0xFFF6BB42), 'Yellow'),
-        PaletteColor(Color(0xFFFFE7B0), 'Cream'),
-        PaletteColor(Color(0xFFEDCA8C), 'Tan'),
-      ],
-    ),
-    PictureInfo(
-      'donut',
-      'Donut',
-      asset: 'assets/pictures/donut.svg',
-      palette: [
-        PaletteColor(Color(0xFFF27596), 'Pink'),
-        PaletteColor(Color(0xFFE01042), 'Red'),
-        PaletteColor(Color(0xFF593123), 'Brown'),
-      ],
-    ),
-    PictureInfo(
-      'melon',
-      'Melon',
-      asset: 'assets/pictures/melon.svg',
-      palette: [
-        PaletteColor(Color(0xFF83C449), 'Green'),
-        PaletteColor(Color(0xFFACE075), 'Light Green'),
-        PaletteColor(Color(0xFFF0F3CD), 'Cream'),
-        PaletteColor(Color(0xFFF9BE78), 'Orange'),
-        PaletteColor(Color(0xFFFECF79), 'Yellow'),
-      ],
-    ),
-  ]),
-  Category('space', 'Space', [
-    PictureInfo(
-      'moon',
-      'Moon',
-      asset: 'assets/pictures/moon.svg',
-      palette: [PaletteColor(Color(0xFFFFEB43), 'Yellow'), PaletteColor(Color(0xFFFFC700), 'Gold')],
-    ),
-    PictureInfo(
-      'star',
-      'Star',
-      asset: 'assets/pictures/star.svg',
-      palette: [
-        PaletteColor(Color(0xFFF1C40F), 'Yellow'),
-        PaletteColor(Color(0xFFF39C12), 'Orange'),
-      ],
-    ),
-    PictureInfo(
-      'rocket',
-      'Rocket',
-      asset: 'assets/pictures/rocket.svg',
-      palette: [
-        PaletteColor(Color(0xFFB5D5EB), 'Light Blue'),
-        PaletteColor(Color(0xFF3A7EB9), 'Blue'),
-        PaletteColor(Color(0xFFD48171), 'Red'),
-        PaletteColor(Color(0xFFE9DF92), 'Yellow'),
-      ],
-    ),
-    PictureInfo(
-      'planet',
-      'Planet',
-      asset: 'assets/pictures/planet.svg',
-      palette: [PaletteColor(Color(0xFF92C9FF), 'Blue'), PaletteColor(Color(0xFF87DFD6), 'Teal')],
-    ),
-    PictureInfo(
-      'alien',
-      'Alien',
-      asset: 'assets/pictures/alien.svg',
-      palette: [
-        PaletteColor(Color(0xFFFF9737), 'Orange'),
-        PaletteColor(Color(0xFFFFD960), 'Yellow'),
-        PaletteColor(Color(0xFF3A5D74), 'Blue'),
-      ],
-    ),
-    PictureInfo(
-      'sun',
-      'Sun',
-      asset: 'assets/pictures/sun.svg',
-      palette: [
-        PaletteColor(Color(0xFFFFAC33), 'Orange'),
-        PaletteColor(Color(0xFFE1E8ED), 'White'),
-      ],
-    ),
-  ]),
+/// The picture catalog, set by [loadCatalog] at startup.
+List<Category> get categories => _categories;
+List<Category> _categories = const [];
+
+/// Reads the catalog from [catalogAsset]. Adding a picture only needs its SVG
+/// in `assets/pictures/` and an entry there.
+Future<List<Category>> loadCatalog() async =>
+    _categories = parseCatalog(await rootBundle.loadString(catalogAsset));
+
+/// Parses catalog JSON: `{"categories": [{"key", "name", "pictures": [...]}]}`.
+/// A picture is `{"id", "name", "svg"?, "palette": [{"color": "#RRGGBB",
+/// "name"}]}`; `svg` is a file name in `assets/pictures/`, and a picture
+/// without one is a placeholder.
+List<Category> parseCatalog(String source) {
+  final json = jsonDecode(source) as Map<String, dynamic>;
+  return [
+    for (final c in json['categories'] as List)
+      Category(c['key'] as String, c['name'] as String, [
+        for (final p in c['pictures'] as List)
+          PictureInfo(
+            p['id'] as String,
+            p['name'] as String,
+            asset: switch (p['svg']) {
+              final String svg => 'assets/pictures/$svg',
+              _ => null,
+            },
+            palette: [
+              for (final e in (p['palette'] as List?) ?? const [])
+                PaletteColor(_hex(e['color'] as String), e['name'] as String),
+            ],
+          ),
+      ]),
+  ];
+}
+
+Color _hex(String s) {
+  final hex = s.startsWith('#') ? s.substring(1) : s;
+  if (!RegExp(r'^[0-9a-fA-F]{6}$').hasMatch(hex)) {
+    throw FormatException('Expected a #RRGGBB color', s);
+  }
+  return Color(int.parse('FF$hex', radix: 16));
+}
+
+/// Colors offered in free-color mode, once a picture is finished.
+const freePalette = [
+  PaletteColor(Color(0xFFFF4D4D), 'Red'),
+  PaletteColor(Color(0xFFFF9F40), 'Orange'),
+  PaletteColor(Color(0xFFFFD93D), 'Yellow'),
+  PaletteColor(Color(0xFF6BCB77), 'Green'),
+  PaletteColor(Color(0xFF2EC4B6), 'Teal'),
+  PaletteColor(Color(0xFF4D96FF), 'Blue'),
+  PaletteColor(Color(0xFF9B5DE5), 'Purple'),
+  PaletteColor(Color(0xFFFF7AB6), 'Pink'),
+  PaletteColor(Color(0xFFA0643C), 'Brown'),
+  PaletteColor(Color(0xFF9AA2B3), 'Gray'),
+  PaletteColor(Color(0xFF293241), 'Black'),
+  PaletteColor(Color(0xFFFFFFFF), 'White'),
 ];
 
 /// One SVG path. [number] is null for fixed line art (eyes, nose), which
@@ -459,6 +123,15 @@ class ColoringPicture {
       final i = info.palette.indexWhere((p) => p.color == color);
       parts.add(Region(parts.length, parseSvgPathData(m[1]!), i < 0 ? null : i + 1));
     }
+    assert(() {
+      final used = {for (final r in parts) r.number};
+      final missing = [
+        for (var n = 1; n <= info.palette.length; n++)
+          if (!used.contains(n)) info.palette[n - 1].name,
+      ];
+      if (missing.isEmpty) return true;
+      throw StateError('${info.id}: palette colors not found in the SVG: ${missing.join(', ')}');
+    }());
     return ColoringPicture(info, parts);
   }
 

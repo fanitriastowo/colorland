@@ -36,6 +36,11 @@ class _CelebrationScreenState extends State<CelebrationScreen> with TickerProvid
     openCanvas(context, widget.controller, controllers: widget.controllers, replace: true);
   }
 
+  /// Reopens the finished picture in free mode.
+  void _freeColor() {
+    openCanvas(context, widget.controller, controllers: widget.controllers, replace: true);
+  }
+
   void _morePictures() {
     final id = widget.controller.picture.info.id;
     final category = categories.firstWhere((c) => c.pictures.any((p) => p.id == id));
@@ -68,33 +73,74 @@ class _CelebrationScreenState extends State<CelebrationScreen> with TickerProvid
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 44, fontWeight: FontWeight.w700, letterSpacing: -0.5, color: fg),
                   ),
-                  AnimatedBuilder(
-                    animation: _bob,
-                    builder: (context, child) {
-                      final t = Curves.easeInOut.transform(_bob.value);
-                      return Transform.translate(
-                        offset: Offset(0, -8 * t),
-                        child: Transform.rotate(angle: (-3 + 2 * t) * math.pi / 180, child: child),
-                      );
-                    },
-                    child: Container(
-                      width: 300,
-                      height: 290,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colors.surface,
-                        borderRadius: BorderRadius.circular(40),
-                        boxShadow: [BoxShadow(color: colors.primaryContainer, offset: const Offset(0, 10))],
-                      ),
-                      child: ArtworkView(widget.controller),
+                  // The card shrinks on short screens so nothing overflows.
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      spacing: 18,
+                      children: [
+                        Flexible(
+                          child: AnimatedBuilder(
+                            animation: _bob,
+                            builder: (context, child) {
+                              final t = Curves.easeInOut.transform(_bob.value);
+                              return Transform.translate(
+                                offset: Offset(0, -8 * t),
+                                child: Transform.rotate(angle: (-3 + 2 * t) * math.pi / 180, child: child),
+                              );
+                            },
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 300, maxHeight: 290),
+                              child: AspectRatio(
+                                aspectRatio: 300 / 290,
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: colors.surface,
+                                    borderRadius: BorderRadius.circular(40),
+                                    boxShadow: [
+                                      BoxShadow(color: colors.primaryContainer, offset: const Offset(0, 10)),
+                                    ],
+                                  ),
+                                  child: ArtworkView(widget.controller),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '${widget.controller.picture.info.name} is all colored in',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: fg),
+                        ),
+                        ChunkyButton(
+                          onTap: _freeColor,
+                          height: 52,
+                          radius: 26,
+                          lip: 4,
+                          pressedLip: 1,
+                          padding: const EdgeInsets.symmetric(horizontal: 22),
+                          color: colors.secondary,
+                          lipColor: Color.lerp(colors.secondary, Colors.black, 0.3)!,
+                          child: Row(
+                            mainAxisSize: .min,
+                            spacing: 8,
+                            children: [
+                              Icon(Icons.brush_rounded, size: 22, color: colors.onSecondary),
+                              Text(
+                                'Color it my way',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.onSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    '${widget.controller.picture.info.name} is all colored in',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: fg),
-                  ),
-                  const Spacer(),
                   Row(
                     spacing: 14,
                     children: [

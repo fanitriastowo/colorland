@@ -1,0 +1,427 @@
+{
+  "categories": [
+    {
+      "key": "animals",
+      "name": "Animals",
+      "pictures": [
+        {
+          "id": "fox",
+          "name": "Fox",
+          "svg": "fox.svg",
+          "palette": [
+            {"color": "#FF8752", "name": "Orange"},
+            {"color": "#D15124", "name": "Red"},
+            {"color": "#E7EEF2", "name": "White"},
+            {"color": "#A3B8BF", "name": "Gray"}
+          ]
+        },
+        {
+          "id": "owl",
+          "name": "Owl",
+          "svg": "owl.svg",
+          "palette": [
+            {"color": "#662113", "name": "Dark Brown"},
+            {"color": "#C1694F", "name": "Brown"},
+            {"color": "#FFCC4D", "name": "Yellow"},
+            {"color": "#FFAC33", "name": "Orange"}
+          ]
+        },
+        {
+          "id": "cat",
+          "name": "Cat",
+          "svg": "cat.svg",
+          "palette": [
+            {"color": "#4C5359", "name": "Gray"},
+            {"color": "#FFFFFF", "name": "White"},
+            {"color": "#93E67F", "name": "Green"},
+            {"color": "#F7A4A4", "name": "Pink"}
+          ]
+        },
+        {
+          "id": "bunny",
+          "name": "Bunny",
+          "svg": "bunny.svg",
+          "palette": [
+            {"color": "#D1E7F8", "name": "Light Blue"},
+            {"color": "#96C8EF", "name": "Blue"},
+            {"color": "#5AAAE7", "name": "Dark Blue"},
+            {"color": "#FF3F62", "name": "Pink"}
+          ]
+        },
+        {
+          "id": "bear",
+          "name": "Bear",
+          "svg": "bear.svg",
+          "palette": [
+            {"color": "#C1694F", "name": "Brown"},
+            {"color": "#D99E82", "name": "Tan"},
+            {"color": "#E6AAAA", "name": "Pink"},
+            {"color": "#DD2E44", "name": "Red"}
+          ]
+        },
+        {
+          "id": "duck",
+          "name": "Duck",
+          "svg": "duck.svg",
+          "palette": [
+            {"color": "#3E721D", "name": "Green"},
+            {"color": "#FFCC4D", "name": "Yellow"},
+            {"color": "#D99E82", "name": "Tan"},
+            {"color": "#C1694F", "name": "Brown"},
+            {"color": "#E1E8ED", "name": "White"}
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ocean",
+      "name": "Ocean",
+      "pictures": [
+        {
+          "id": "fish",
+          "name": "Fish",
+          "svg": "fish.svg",
+          "palette": [
+            {"color": "#FC8C29", "name": "Orange"},
+            {"color": "#BD53B5", "name": "Purple"},
+            {"color": "#9DC1E4", "name": "Blue"},
+            {"color": "#FFDED5", "name": "Peach"}
+          ]
+        },
+        {
+          "id": "whale",
+          "name": "Whale",
+          "svg": "whale.svg",
+          "palette": [
+            {"color": "#4AD0FF", "name": "Blue"},
+            {"color": "#99E5FF", "name": "Light Blue"},
+            {"color": "#16A5D9", "name": "Dark Blue"},
+            {"color": "#FAE8AC", "name": "Cream"}
+          ]
+        },
+        {
+          "id": "crab",
+          "name": "Crab",
+          "svg": "crab.svg",
+          "palette": [
+            {"color": "#FF5722", "name": "Orange"},
+            {"color": "#AA290B", "name": "Red"},
+            {"color": "#D84315", "name": "Dark Orange"}
+          ]
+        },
+        {
+          "id": "octopus",
+          "name": "Octopus",
+          "svg": "octopus.svg",
+          "palette": [
+            {"color": "#FF615E", "name": "Coral"},
+            {"color": "#FFA8A8", "name": "Pink"},
+            {"color": "#A52914", "name": "Red"}
+          ]
+        },
+        {
+          "id": "turtle",
+          "name": "Turtle",
+          "svg": "turtle.svg",
+          "palette": [
+            {"color": "#83BF4F", "name": "Green"},
+            {"color": "#6EA03F", "name": "Dark Green"},
+            {"color": "#C1875D", "name": "Tan"},
+            {"color": "#7D593E", "name": "Brown"},
+            {"color": "#FFD93B", "name": "Yellow"}
+          ]
+        },
+        {
+          "id": "seal",
+          "name": "Seal",
+          "svg": "seal.svg",
+          "palette": [
+            {"color": "#0F597A", "name": "Dark Blue"},
+            {"color": "#057091", "name": "Blue"},
+            {"color": "#0E91AF", "name": "Teal"},
+            {"color": "#1AB9D3", "name": "Light Blue"},
+            {"color": "#E07127", "name": "Orange"},
+            {"color": "#E0A617", "name": "Yellow"}
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cars",
+      "name": "Cars",
+      "pictures": [
+        {
+          "id": "bus",
+          "name": "Bus",
+          "svg": "bus.svg",
+          "palette": [
+            {"color": "#FFC107", "name": "Yellow"},
+            {"color": "#FFF8E1", "name": "Cream"},
+            {"color": "#455A64", "name": "Gray"},
+            {"color": "#9FA8DA", "name": "Lilac"},
+            {"color": "#7986CB", "name": "Blue"},
+            {"color": "#64DD17", "name": "Green"}
+          ]
+        },
+        {
+          "id": "truck",
+          "name": "Truck",
+          "svg": "truck.svg",
+          "palette": [
+            {"color": "#D3552F", "name": "Orange"},
+            {"color": "#9D2524", "name": "Red"},
+            {"color": "#4E6874", "name": "Slate"},
+            {"color": "#6D858E", "name": "Gray"},
+            {"color": "#FFFFFF", "name": "White"}
+          ]
+        },
+        {
+          "id": "train",
+          "name": "Train",
+          "svg": "train.svg",
+          "palette": [
+            {"color": "#C1E7D8", "name": "Mint"},
+            {"color": "#8599A4", "name": "Gray"},
+            {"color": "#9B5C77", "name": "Purple"},
+            {"color": "#ACD8CB", "name": "Green"}
+          ]
+        },
+        {
+          "id": "boat",
+          "name": "Boat",
+          "svg": "boat.svg",
+          "palette": [
+            {"color": "#8599A4", "name": "Gray"},
+            {"color": "#C1E7D8", "name": "Mint"},
+            {"color": "#9B5C77", "name": "Purple"}
+          ]
+        },
+        {
+          "id": "plane",
+          "name": "Plane",
+          "svg": "plane.svg",
+          "palette": [
+            {"color": "#FFCE00", "name": "Yellow"},
+            {"color": "#333E48", "name": "Dark Gray"},
+            {"color": "#7D868C", "name": "Gray"}
+          ]
+        },
+        {
+          "id": "bike",
+          "name": "Bike",
+          "svg": "bike.svg",
+          "palette": [
+            {"color": "#E51B54", "name": "Red"},
+            {"color": "#5F7B89", "name": "Gray"},
+            {"color": "#CFD7DB", "name": "Silver"},
+            {"color": "#A31A53", "name": "Purple"}
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dinos",
+      "name": "Dinos",
+      "pictures": [
+        {
+          "id": "t-rex",
+          "name": "T-Rex",
+          "svg": "t-rex.svg",
+          "palette": [
+            {"color": "#77B155", "name": "Light Green"},
+            {"color": "#5C913A", "name": "Green"},
+            {"color": "#3E701E", "name": "Dark Green"},
+            {"color": "#F4900C", "name": "Orange"}
+          ]
+        },
+        {
+          "id": "egg",
+          "name": "Egg",
+          "svg": "egg.svg",
+          "palette": [
+            {"color": "#F3F3F3", "name": "White"},
+            {"color": "#F0C419", "name": "Yellow"}
+          ]
+        },
+        {
+          "id": "stego",
+          "name": "Stego",
+          "svg": "stegosaurus.svg",
+          "palette": [
+            {"color": "#46AF64", "name": "Green"},
+            {"color": "#389350", "name": "Dark Green"},
+            {"color": "#62CC7E", "name": "Light Green"},
+            {"color": "#775C38", "name": "Brown"}
+          ]
+        },
+        {
+          "id": "ptero",
+          "name": "Ptero",
+          "svg": "pterosaurus.svg",
+          "palette": [
+            {"color": "#6DAA77", "name": "Green"},
+            {"color": "#639E6C", "name": "Dark Green"},
+            {"color": "#79B585", "name": "Light Green"}
+          ]
+        },
+        {
+          "id": "bronto",
+          "name": "Bronto",
+          "svg": "apatosaurus.svg",
+          "palette": [
+            {"color": "#384276", "name": "Navy"},
+            {"color": "#4B5E99", "name": "Blue"},
+            {"color": "#D9BBF2", "name": "Lilac"},
+            {"color": "#5F196B", "name": "Purple"}
+          ]
+        },
+        {
+          "id": "trike",
+          "name": "Trike",
+          "svg": "triceratops.svg",
+          "palette": [
+            {"color": "#98C79C", "name": "Green"},
+            {"color": "#ABD1AD", "name": "Light Green"},
+            {"color": "#87B98F", "name": "Dark Green"},
+            {"color": "#D570A7", "name": "Pink"}
+          ]
+        }
+      ]
+    },
+    {
+      "key": "food",
+      "name": "Food",
+      "pictures": [
+        {
+          "id": "apple",
+          "name": "Apple",
+          "svg": "apple.svg",
+          "palette": [
+            {"color": "#DF2B2B", "name": "Red"},
+            {"color": "#FFF5CA", "name": "Cream"},
+            {"color": "#EAD991", "name": "Yellow"},
+            {"color": "#286F0D", "name": "Green"}
+          ]
+        },
+        {
+          "id": "cake",
+          "name": "Cake",
+          "svg": "cake.svg",
+          "palette": [
+            {"color": "#F5AD1A", "name": "Orange"},
+            {"color": "#F5ECDA", "name": "Cream"},
+            {"color": "#EACC53", "name": "Yellow"},
+            {"color": "#5B2B20", "name": "Brown"}
+          ]
+        },
+        {
+          "id": "pizza",
+          "name": "Pizza",
+          "svg": "pizza.svg",
+          "palette": [
+            {"color": "#EBA824", "name": "Yellow"},
+            {"color": "#6E4921", "name": "Brown"},
+            {"color": "#E8BC38", "name": "Gold"},
+            {"color": "#FFFCF4", "name": "White"},
+            {"color": "#3D7C38", "name": "Green"}
+          ]
+        },
+        {
+          "id": "pear",
+          "name": "Pear",
+          "svg": "pear.svg",
+          "palette": [
+            {"color": "#F6BB42", "name": "Yellow"},
+            {"color": "#FFE7B0", "name": "Cream"},
+            {"color": "#EDCA8C", "name": "Tan"}
+          ]
+        },
+        {
+          "id": "donut",
+          "name": "Donut",
+          "svg": "donut.svg",
+          "palette": [
+            {"color": "#F27596", "name": "Pink"},
+            {"color": "#E01042", "name": "Red"},
+            {"color": "#593123", "name": "Brown"}
+          ]
+        },
+        {
+          "id": "melon",
+          "name": "Melon",
+          "svg": "melon.svg",
+          "palette": [
+            {"color": "#83C449", "name": "Green"},
+            {"color": "#ACE075", "name": "Light Green"},
+            {"color": "#F0F3CD", "name": "Cream"},
+            {"color": "#F9BE78", "name": "Orange"},
+            {"color": "#FECF79", "name": "Yellow"}
+          ]
+        }
+      ]
+    },
+    {
+      "key": "space",
+      "name": "Space",
+      "pictures": [
+        {
+          "id": "moon",
+          "name": "Moon",
+          "svg": "moon.svg",
+          "palette": [
+            {"color": "#FFEB43", "name": "Yellow"},
+            {"color": "#FFC700", "name": "Gold"}
+          ]
+        },
+        {
+          "id": "star",
+          "name": "Star",
+          "svg": "star.svg",
+          "palette": [
+            {"color": "#F1C40F", "name": "Yellow"},
+            {"color": "#F39C12", "name": "Orange"}
+          ]
+        },
+        {
+          "id": "rocket",
+          "name": "Rocket",
+          "svg": "rocket.svg",
+          "palette": [
+            {"color": "#B5D5EB", "name": "Light Blue"},
+            {"color": "#3A7EB9", "name": "Blue"},
+            {"color": "#D48171", "name": "Red"},
+            {"color": "#E9DF92", "name": "Yellow"}
+          ]
+        },
+        {
+          "id": "planet",
+          "name": "Planet",
+          "svg": "planet.svg",
+          "palette": [
+            {"color": "#92C9FF", "name": "Blue"},
+            {"color": "#87DFD6", "name": "Teal"}
+          ]
+        },
+        {
+          "id": "alien",
+          "name": "Alien",
+          "svg": "alien.svg",
+          "palette": [
+            {"color": "#FF9737", "name": "Orange"},
+            {"color": "#FFD960", "name": "Yellow"},
+            {"color": "#3A5D74", "name": "Blue"}
+          ]
+        },
+        {
+          "id": "sun",
+          "name": "Sun",
+          "svg": "sun.svg",
+          "palette": [
+            {"color": "#FFAC33", "name": "Orange"},
+            {"color": "#E1E8ED", "name": "White"}
+          ]
+        }
+      ]
+    }
+  ]
+}
