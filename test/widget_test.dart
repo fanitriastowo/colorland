@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,8 +41,6 @@ Future<void> _complete(WidgetTester tester, ColoringController c) async {
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(const MethodChannel('flutter_tts'), (_) async => null);
   });
 
   testWidgets('Home opens the fox canvas', (WidgetTester tester) async {
