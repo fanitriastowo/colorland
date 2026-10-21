@@ -5,7 +5,7 @@ import 'package:colorland/coloring/coloring_controller.dart';
 import 'package:colorland/coloring/picture.dart';
 
 /// Three side-by-side squares: two of color 1, one of color 2.
-ColoringController _controller({Iterable<int> filled = const []}) {
+ColoringController _controller({Iterable<int> filled = const [], Map<int, Color> painted = const {}}) {
   const info = PictureInfo('t', 'Test', palette: [
     PaletteColor(Color(0xFFFF0000), 'Red'),
     PaletteColor(Color(0xFF0000FF), 'Blue'),
@@ -15,7 +15,7 @@ ColoringController _controller({Iterable<int> filled = const []}) {
     Region(0, square(0), 1),
     Region(1, square(60), 1),
     Region(2, square(120), 2),
-  ]), filled: filled);
+  ]), filled: filled, painted: painted);
 }
 
 void main() {
@@ -172,9 +172,109 @@ void main() {
   });
 
   testWidgets('every catalog picture loads and uses every palette number', (tester) async {
+    await loadCatalog();
+    expect(categories, isNotEmpty);
     for (final info in categories.expand((c) => c.pictures)) {
       final picture = await ColoringPicture.load(info);
       expect(picture.regions.map((r) => r.number).toSet(), picture.numbers.toSet(), reason: info.id);
     }
+  });
+
+  test('a finished picture repaints in free mode, with undo and eraser', () {
+    final c = _controller(filled: [0, 1, 2]);
+    final r = c.picture.parts;
+    expect(c.freeMode, isTrue);
+    expect(c.colorOf(r[0]), const Color(0xFFFF0000));
+
+    c.selectPaint(const Color(0xFF00FF00));
+    c.tap(r[0]);
+    expect(c.painted, {0: const Color(0xFF00FF00)});
+    expect(c.colorOf(r[0]), const Color(0xFF00FF00));
+    expect(c.popId, 0);
+
+    c.tap(r[0]);
+    c.undo();
+    expect(c.painted, isEmpty);
+    expect(c.canUndo, isFalse, reason: 'repainting the same color adds no history');
+
+    c.redo();
+    expect(c.painted, {0: const Color(0xFF00FF00)});
+
+    c.selectPaint(const Color(0xFF0000FF));
+    c.tap(r[2]);
+    expect(c.painted.containsKey(2), isFalse, reason: 'its own palette color is a no-op');
+
+    c.toggleEraser();
+    c.tap(r[0]);
+    expect(c.painted, isEmpty);
+    expect(c.filled, {0, 1, 2}, reason: 'erasing in free mode only removes paint');
+    c.tap(r[1]);
+    expect(c.filled, {0, 1, 2});
+
+    c.toggleEraser();
+    c.showHint();
+    expect(c.hint, isFalse, reason: 'no hints in free mode');
+
+    c.tap(r[1]);
+    expect(c.painted, isNotEmpty);
+    c.reset();
+    expect(c.painted, isEmpty);
+    expect(c.freeMode, isFalse);
+    c.dispose();
+  });
+
+  test('undo out of free mode unwinds paint first', () {
+    final c = _controller(filled: [0, 1]);
+    final r = c.picture.parts;
+    c.tap(r[2]);
+    expect(c.freeMode, isTrue);
+    c.selectPaint(const Color(0xFF00FF00));
+    c.tap(r[2]);
+    c.undo();
+    expect(c.colorOf(r[2]), const Color(0xFF0000FF));
+    c.undo();
+    expect(c.freeMode, isFalse);
+    expect(c.filled, {0, 1});
+    c.dispose();
+  });
+
+  test('saved paint seeds the controller', () {
+    final c = _controller(filled: [0, 1, 2], painted: {2: const Color(0xFF123456)});
+    expect(c.colorOf(c.picture.parts[2]), const Color(0xFF123456));
+    expect(c.canUndo, isFalse);
+    c.dispose();
+  });
+
+  test('parseCatalog reads categories, palettes and placeholders', () {
+    final cats = parseCatalog('''
+      {"categories": [{"key": "k", "name": "K", "pictures": [
+        {"id": "a", "name": "A", "svg": "a.svg",
+         "palette": [{"color": "#ff0000", "name": "Red"}, {"color": "0000FF", "name": "Blue"}]},
+        {"id": "b", "name": "B"}
+      ]}]}''');
+    expect(cats.single.key, 'k');
+    final [a, b] = cats.single.pictures;
+    expect(a.asset, 'assets/pictures/a.svg');
+    expect([for (final p in a.palette) p.color], const [Color(0xFFFF0000), Color(0xFF0000FF)]);
+    expect(a.palette.last.name, 'Blue');
+    expect(b.asset, isNull);
+    expect(b.palette, isEmpty);
+
+    expect(
+      () => parseCatalog('{"categories": [{"key": "k", "name": "K", "pictures": ['
+          '{"id": "a", "name": "A", "palette": [{"color": "red", "name": "Red"}]}]}]}'),
+      throwsFormatException,
+    );
+  });
+
+  test('parse flags palette colors missing from the SVG', () {
+    const info = PictureInfo('t', 'Test', palette: [
+      PaletteColor(Color(0xFFFF0000), 'Red'),
+      PaletteColor(Color(0xFF00FF00), 'Green'),
+    ]);
+    expect(
+      () => ColoringPicture.parse(info, '<path d="M0 0H50V50H0Z" style="fill:#ff0000"/>'),
+      throwsA(isA<StateError>().having((e) => e.message, 'message', contains('Green'))),
+    );
   });
 }

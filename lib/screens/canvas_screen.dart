@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../coloring/artwork_view.dart';
 import '../coloring/coloring_controller.dart';
+import '../coloring/picture.dart';
 import '../theme.dart';
 import '../widgets/chunky.dart';
 import 'celebration_screen.dart';
@@ -38,6 +39,10 @@ class CanvasScreen extends StatefulWidget {
 class _CanvasScreenState extends State<CanvasScreen> {
   Timer? _doneTimer;
 
+  /// Celebrate only when the picture becomes complete, not on every change
+  /// to an already finished picture (free mode).
+  late bool _wasComplete = c.isComplete;
+
   ColoringController get c => widget.controller;
 
   @override
@@ -54,7 +59,9 @@ class _CanvasScreenState extends State<CanvasScreen> {
   }
 
   void _onChange() {
-    if (!c.isComplete || _doneTimer != null) return;
+    final justFinished = c.isComplete && !_wasComplete;
+    _wasComplete = c.isComplete;
+    if (!justFinished || _doneTimer != null) return;
     HapticFeedback.heavyImpact();
     _doneTimer = Timer(const Duration(milliseconds: 750), () {
       _doneTimer = null;
@@ -162,29 +169,25 @@ class _CanvasScreenState extends State<CanvasScreen> {
             ),
           ),
           if (c.eraser)
-            Positioned(
-              top: 12,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: context.colors.tertiary,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    'Tap to erase',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.onTertiary,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            _chip(context, 'Tap to erase', context.colors.tertiary, context.colors.onTertiary)
+          else if (c.freeMode)
+            _chip(context, 'Color it your way!', context.colors.primary, context.colors.onPrimary),
         ],
+      ),
+    );
+  }
+
+  Widget _chip(BuildContext context, String text, Color bg, Color fg) {
+    return Positioned(
+      top: 12,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
+          child: Text(text, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fg)),
+        ),
       ),
     );
   }
@@ -210,6 +213,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
           'Hint',
           AppIcons.hint,
           c.showHint,
+          enabled: !c.freeMode,
           strokeWidth: 2.4,
           bg: c.hint ? colors.primary : null,
           fg: c.hint ? colors.onPrimary : null,
@@ -252,31 +256,64 @@ class _CanvasScreenState extends State<CanvasScreen> {
   }
 
   Widget _paletteBar(BuildContext context) {
+    final decoration = BoxDecoration(
+      color: context.colors.surface,
+      borderRadius: BorderRadius.circular(34),
+      boxShadow: [BoxShadow(color: context.extra.lip, offset: const Offset(0, 6))],
+    );
+    if (c.freeMode) {
+      // Scrolls sideways; the padding keeps the selected ring unclipped.
+      return DecoratedBox(
+        decoration: decoration,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(34),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            child: Row(
+              spacing: 16,
+              children: [
+                for (final p in freePalette)
+                  GestureDetector(
+                    onTap: () => c.selectPaint(p.color),
+                    child: _Swatch(
+                      p.color,
+                      size: 56,
+                      selected: !c.eraser && c.paint == p.color,
+                      semanticLabel: p.name,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(34),
-        boxShadow: [BoxShadow(color: context.extra.lip, offset: const Offset(0, 6))],
-      ),
+      decoration: decoration,
       child: Row(
         mainAxisAlignment: .spaceAround,
         children: [
           for (final n in c.picture.numbers)
             GestureDetector(
               onTap: () => c.select(n),
-              child: _Swatch(
-                c,
-                n,
-                size: 66,
-                fontSize: 28,
-                selected: !c.eraser && c.selected == n,
-              ),
+              child: _numberSwatch(n, size: 66, fontSize: 28, selected: !c.eraser && c.selected == n),
             ),
         ],
       ),
     );
   }
+
+  Widget _numberSwatch(int n, {required double size, required double fontSize, bool selected = false}) =>
+      _Swatch(
+        c.picture.info.palette[n - 1].color,
+        label: '$n',
+        size: size,
+        fontSize: fontSize,
+        selected: selected,
+        done: c.filledOf(n) == c.totalOf(n),
+      );
 
   void _showColorsSheet(BuildContext context) {
     showModalBottomSheet<void>(
@@ -297,20 +334,29 @@ class _CanvasScreenState extends State<CanvasScreen> {
   }
 }
 
-/// Number circle in the palette color. The palette bar version animates
-/// in when [selected].
+/// Color circle, with an optional number [label]. The palette bar version
+/// animates in when [selected]; [done] adds a check badge.
 class _Swatch extends StatelessWidget {
-  const _Swatch(this.c, this.n, {required this.size, required this.fontSize, this.selected = false});
+  const _Swatch(
+    this.color, {
+    this.label,
+    required this.size,
+    this.fontSize = 0,
+    this.selected = false,
+    this.done = false,
+    this.semanticLabel,
+  });
 
-  final ColoringController c;
-  final int n;
+  final Color color;
+  final String? label;
   final double size;
   final double fontSize;
   final bool selected;
+  final bool done;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
-    final color = c.picture.info.palette[n - 1].color;
     final circle = Container(
       width: size,
       height: size,
@@ -331,14 +377,16 @@ class _Swatch extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: ArtColors.line.withValues(alpha: 0.1), width: 2),
             ),
-      child: Text(
-        '$n',
-        style: TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.w700,
-          color: color.computeLuminance() < 0.3 ? Colors.white : ArtColors.line,
-        ),
-      ),
+      child: label == null
+          ? null
+          : Text(
+              label!,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: color.computeLuminance() < 0.3 ? Colors.white : ArtColors.line,
+              ),
+            ),
     );
     return TweenAnimationBuilder<double>(
       tween: Tween(end: selected ? 1 : 0),
@@ -348,13 +396,17 @@ class _Swatch extends StatelessWidget {
         offset: Offset(0, -4 * t),
         child: Transform.scale(scale: 1 + 0.14 * t, child: child),
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          circle,
-          if (c.filledOf(n) == c.totalOf(n))
-            const Positioned(top: -4, right: -4, child: CheckBadge(size: 26, border: 3)),
-        ],
+      child: Semantics(
+        label: semanticLabel,
+        selected: selected,
+        button: semanticLabel != null,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            circle,
+            if (done) const Positioned(top: -4, right: -4, child: CheckBadge(size: 26, border: 3)),
+          ],
+        ),
       ),
     );
   }
@@ -400,9 +452,44 @@ class _ColorsSheet extends StatelessWidget {
               ),
             ],
           ),
-          for (final n in c.picture.numbers) _row(context, n),
+          if (c.freeMode) _freeGrid(context) else
+            for (final n in c.picture.numbers) _row(context, n),
         ],
       ),
+    );
+  }
+
+  Widget _freeGrid(BuildContext context) {
+    return GridView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      clipBehavior: Clip.none,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 96,
+        mainAxisExtent: 96,
+        mainAxisSpacing: 10,
+      ),
+      children: [
+        for (final p in freePalette)
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              c.selectPaint(p.color);
+              Navigator.of(context).pop();
+            },
+            child: Column(
+              mainAxisAlignment: .center,
+              spacing: 8,
+              children: [
+                _Swatch(p.color, size: 52, selected: !c.eraser && c.paint == p.color),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(p.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
@@ -425,7 +512,13 @@ class _ColorsSheet extends StatelessWidget {
       child: Row(
         spacing: 14,
         children: [
-          _Swatch(c, n, size: 56, fontSize: 24),
+          _Swatch(
+            c.picture.info.palette[n - 1].color,
+            label: '$n',
+            size: 56,
+            fontSize: 24,
+            done: got == all,
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: .stretch,
