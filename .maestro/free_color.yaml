@@ -1,0 +1,61 @@
+appId: com.example.colorland
+---
+# Finish the Egg (2 regions), then recolor it in free-color mode.
+- launchApp:
+    clearState: true
+- scrollUntilVisible:
+    element: "Dinos.*"
+- tapOn: "Dinos.*"
+- scrollUntilVisible:
+    element: "Egg.*"
+- tapOn: "Egg.*"
+- assertVisible: "0 / 2"
+
+# The canvas is painted, so regions are tapped by screen position.
+# 74%,35% is region 1 and 52%,42% is region 2 (checked on 360-412pt wide phones).
+- tapOn: "1"
+- tapOn:
+    point: "74%,35%"
+- assertVisible: "1 / 2"
+- tapOn: "2"
+- tapOn:
+    point: "52%,42%"
+
+# Finishing celebrates; the confetti never stops, so wait for the text.
+- extendedWaitUntil:
+    visible: "You did it!"
+    timeout: 5000
+- assertVisible: "Egg is all colored in"
+- tapOn: "Color it my way"
+
+# Free-color mode: any color, any region, no second celebration.
+- assertVisible: "Color it your way!"
+- assertVisible: "2 / 2"
+- tapOn: "Green"
+- tapOn:
+    point: "52%,42%"
+- waitForAnimationToEnd:
+    timeout: 2000
+- assertNotVisible: "You did it!"
+- assertVisible: "Color it your way!"
+
+# Undo the paint, redo it, then the eraser removes paint but keeps the fill.
+- tapOn: "Undo"
+- tapOn: "Redo"
+- tapOn: "Eraser"
+- assertVisible: "Tap to erase"
+- tapOn:
+    point: "52%,42%"
+- assertVisible: "2 / 2"
+
+# The finished picture survives a restart and reopens in free-color mode.
+- stopApp
+- launchApp
+- scrollUntilVisible:
+    element: "Dinos.*"
+- tapOn: "Dinos.*"
+- scrollUntilVisible:
+    element: "Egg.*"
+- tapOn: "Egg.*"
+- assertVisible: "2 / 2"
+- assertVisible: "Color it your way!"

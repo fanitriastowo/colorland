@@ -20,7 +20,7 @@ flutter run -d <device-id>
 
 `pubspec.yaml` has a `scripts:` section (`ios`, `android`, `coverage`) holding shell one-liners to boot a simulator/emulator (the Android one expects an AVD named `Pixel_10a`) and run the app, or render an HTML coverage report. The README has the iOS one spelled out.
 
-End-to-end flows use Maestro (`.maestro/*.yaml`, app id `com.example.colorland`): `maestro test .maestro/`. `coloring.yaml` taps the fox canvas by screen percentage and asserts the `done / total` counter, so changes to the fox SVG, its palette, or canvas layout can break it.
+End-to-end flows use Maestro (`.maestro/*.yaml`, app id `com.example.colorland`): `maestro test .maestro/`. `coloring.yaml` taps the fox canvas by screen percentage and asserts the `done / total` counter, so changes to the fox SVG, its palette, or canvas layout can break it. `free_color.yaml` does the same with the Egg (2 regions) to reach free-color mode.
 
 ## Architecture
 
