@@ -1,25 +1,43 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'picture.dart';
 
-/// Color-by-number state for one picture. [filled] seeds saved progress;
-/// undo history starts empty.
+/// What one region shows: filled or not, and a free-mode color that
+/// overrides its palette color.
+typedef RegionState = ({bool filled, Color? color});
+
+/// Color-by-number state for one picture. [filled] and [painted] seed saved
+/// progress; undo history starts empty.
+///
+/// Once every region is filled the picture is in free mode: taps repaint
+/// regions with [paint] instead of filling by number.
 class ColoringController extends ChangeNotifier {
-  ColoringController(this.picture, {Iterable<int> filled = const []}) {
+  ColoringController(
+    this.picture, {
+    Iterable<int> filled = const [],
+    Map<int, Color> painted = const {},
+  }) {
     this.filled.addAll(filled);
+    this.painted.addAll(painted);
     selected = _firstOpen ?? 1;
   }
 
   final ColoringPicture picture;
 
   final Set<int> filled = {};
-  final List<({int id, bool value})> _history = [];
+
+  /// Free-mode colors by region id.
+  final Map<int, Color> painted = {};
+
+  final List<({int id, RegionState from, RegionState to})> _history = [];
   int _ptr = 0;
 
   late int selected;
+  Color paint = freePalette.first.color;
   bool eraser = false;
   bool hint = false;
 
@@ -33,12 +51,16 @@ class ColoringController extends ChangeNotifier {
   int get done => filled.length;
   double get progress => total == 0 ? 0 : done / total;
   bool get isComplete => done == total;
+  bool get freeMode => isComplete;
   bool get canUndo => _ptr > 0;
   bool get canRedo => _ptr < _history.length;
 
   int totalOf(int n) => picture.regions.where((r) => r.number == n).length;
   int filledOf(int n) =>
       picture.regions.where((r) => r.number == n && filled.contains(r.id)).length;
+
+  /// The color region [r] shows when filled.
+  Color colorOf(Region r) => painted[r.id] ?? picture.info.palette[r.number! - 1].color;
 
   int? get _firstOpen {
     for (final n in picture.numbers) {
@@ -47,10 +69,20 @@ class ColoringController extends ChangeNotifier {
     return null;
   }
 
+  RegionState _stateOf(int id) => (filled: filled.contains(id), color: painted[id]);
+
   void tap(Region r) {
     final isFilled = filled.contains(r.id);
+    if (freeMode) {
+      if (eraser) {
+        if (painted.containsKey(r.id)) _push(r.id, (filled: true, color: null));
+      } else if (colorOf(r) != paint) {
+        _push(r.id, (filled: true, color: paint));
+      }
+      return;
+    }
     if (eraser) {
-      if (isFilled) _push(r.id, false);
+      if (isFilled) _push(r.id, (filled: false, color: null));
       return;
     }
     if (isFilled) return;
@@ -64,13 +96,13 @@ class ColoringController extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    _push(r.id, true);
+    _push(r.id, (filled: true, color: null));
   }
 
   void undo() {
     if (!canUndo) return;
     final a = _history[--_ptr];
-    _apply(a.id, !a.value);
+    _apply(a.id, a.from);
     popId = null;
     notifyListeners();
   }
@@ -78,14 +110,21 @@ class ColoringController extends ChangeNotifier {
   void redo() {
     if (!canRedo) return;
     final a = _history[_ptr++];
-    _apply(a.id, a.value);
-    popId = a.value ? a.id : null;
+    _apply(a.id, a.to);
+    popId = a.to.filled ? a.id : null;
     _after();
     notifyListeners();
   }
 
   void select(int n) {
     selected = n;
+    eraser = false;
+    notifyListeners();
+  }
+
+  /// Picks the free-mode color.
+  void selectPaint(Color color) {
+    paint = color;
     eraser = false;
     notifyListeners();
   }
@@ -97,6 +136,7 @@ class ColoringController extends ChangeNotifier {
   }
 
   void showHint() {
+    if (freeMode) return;
     hint = true;
     eraser = false;
     _hintTimer?.cancel();
@@ -114,9 +154,10 @@ class ColoringController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// "Again": clear fills and history.
+  /// "Again": clear fills, free-mode colors and history.
   void reset() {
     filled.clear();
+    painted.clear();
     _history.clear();
     _ptr = 0;
     selected = 1;
@@ -126,18 +167,25 @@ class ColoringController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _push(int id, bool value) {
+  void _push(int id, RegionState to) {
     _history
       ..removeRange(_ptr, _history.length)
-      ..add((id: id, value: value));
+      ..add((id: id, from: _stateOf(id), to: to));
     _ptr++;
-    _apply(id, value);
-    popId = value ? id : null;
+    _apply(id, to);
+    popId = to.filled ? id : null;
     _after();
     notifyListeners();
   }
 
-  void _apply(int id, bool value) => value ? filled.add(id) : filled.remove(id);
+  void _apply(int id, RegionState s) {
+    s.filled ? filled.add(id) : filled.remove(id);
+    if (s.color case final color?) {
+      painted[id] = color;
+    } else {
+      painted.remove(id);
+    }
+  }
 
   /// Auto-advance to the lowest unfinished number once the selected one is done.
   void _after() {
@@ -160,22 +208,33 @@ class ColoringController extends ChangeNotifier {
   }
 }
 
-/// Loads every catalog picture that has an SVG, keyed by picture id, with
-/// fills restored from and saved to shared preferences.
+/// Loads the catalog and every picture that has an SVG, keyed by picture id,
+/// with fills and free-mode colors restored from and saved to shared
+/// preferences.
 Future<Map<String, ColoringController>> loadControllers() async {
   final prefs = await SharedPreferences.getInstance();
   final controllers = <String, ColoringController>{};
-  for (final c in categories) {
+  for (final c in await loadCatalog()) {
     for (final p in c.pictures) {
       if (p.asset == null) continue;
       final picture = await ColoringPicture.load(p);
-      final key = 'fills.${p.id}';
       // Skip ids that no longer match a region (the SVG changed).
-      final saved = (prefs.getStringList(key) ?? []).map(int.parse).where(
-          (id) => id < picture.parts.length && !picture.parts[id].fixed);
-      final controller = ColoringController(picture, filled: saved);
-      controller.addListener(
-          () => prefs.setStringList(key, [for (final id in controller.filled) '$id']));
+      bool valid(int id) => id < picture.parts.length && !picture.parts[id].fixed;
+      final fillsKey = 'fills.${p.id}', paintKey = 'paint.${p.id}';
+      final saved = (prefs.getStringList(fillsKey) ?? []).map(int.parse).where(valid);
+      final painted = <int, Color>{
+        for (final e in prefs.getStringList(paintKey) ?? <String>[])
+          if (e.split(':') case [final id, final argb] when valid(int.parse(id)))
+            int.parse(id): Color(int.parse(argb, radix: 16)),
+      };
+      final controller = ColoringController(picture, filled: saved, painted: painted);
+      controller.addListener(() {
+        prefs.setStringList(fillsKey, [for (final id in controller.filled) '$id']);
+        prefs.setStringList(paintKey, [
+          for (final MapEntry(:key, :value) in controller.painted.entries)
+            '$key:${value.toARGB32().toRadixString(16)}',
+        ]);
+      });
       controllers[p.id] = controller;
     }
   }

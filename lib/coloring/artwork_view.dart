@@ -54,7 +54,7 @@ class _ArtworkViewState extends State<ArtworkView> with TickerProviderStateMixin
   }
 
   Color _target(Region r) {
-    if (c.filled.contains(r.id)) return c.picture.info.palette[r.number! - 1].color;
+    if (c.filled.contains(r.id)) return c.colorOf(r);
     final tinted = widget.interactive && !c.eraser && r.number == c.selected;
     return tinted ? ArtColors.tint : ArtColors.paper;
   }

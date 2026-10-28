@@ -240,4 +240,49 @@ void main() {
     expect(light.lerp(null, 0.5), same(light));
     expect(light.lerp(dark, 1).track, dark.track);
   });
+
+  testWidgets('Color it my way repaints a finished picture and keeps the paint', (tester) async {
+    final c = await _openFox(tester);
+    await _complete(tester, c);
+
+    await tester.tap(find.text('Color it my way'));
+    await tester.pumpAndSettle();
+    expect(find.text('Color it your way!'), findsOneWidget);
+    expect(find.text('15 / 15'), findsOneWidget);
+
+    // Free palette bar.
+    final swatches = find.descendant(
+      of: find.byType(SingleChildScrollView),
+      matching: find.byType(GestureDetector),
+    );
+    expect(swatches, findsNWidgets(freePalette.length));
+    await tester.tap(swatches.at(1));
+    await tester.pump();
+    expect(c.paint, freePalette[1].color);
+
+    // Colors sheet lists the free colors by name.
+    await tester.tap(find.byType(RoundButton).last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Purple'));
+    await tester.pumpAndSettle();
+    expect(find.text('Colors'), findsNothing);
+    expect(c.paint, freePalette.firstWhere((p) => p.name == 'Purple').color);
+
+    final r = c.picture.regions.first;
+    c.tap(r);
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('You did it!'), findsNothing, reason: 'painting does not celebrate again');
+    expect(c.colorOf(r), c.paint);
+
+    final restarted = await tester.runAsync(loadControllers);
+    expect(restarted!['fox']!.painted, {r.id: c.paint});
+
+    await tester.tap(find.text('Eraser'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tap to erase'), findsOneWidget);
+    c.tap(r);
+    await tester.pumpAndSettle();
+    expect(c.painted, isEmpty);
+    expect(c.isComplete, isTrue);
+  });
 }
